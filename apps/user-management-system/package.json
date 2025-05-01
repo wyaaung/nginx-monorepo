@@ -1,0 +1,8 @@
+{
+  "name": "@nginx-monorepo/user-management-system",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "user-management-system"
+  }
+}
