@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue';
 export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/console',
+  base: '/console/',
   server:{
     port: 4201,
     host: 'localhost',

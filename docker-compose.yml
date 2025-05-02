@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "8080:80"
+    entrypoint: ["/bin/sh", "-c"]
+    command: [
+      "sed -i 's/localhost:4200/host.docker.internal:4200/g' /etc/nginx/http.d/proxy-setup.conf && 
+       sed -i 's/localhost:4201/host.docker.internal:4201/g' /etc/nginx/http.d/proxy-setup.conf && 
+       sed -i 's/localhost:4200/host.docker.internal:4200/g' /etc/nginx/http.d/config/*.conf &&
+       sed -i 's/localhost:4201/host.docker.internal:4201/g' /etc/nginx/http.d/config/*.conf &&
+       nginx -g 'daemon off;'"
+    ]
