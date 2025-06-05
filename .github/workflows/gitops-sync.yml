@@ -14,19 +14,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
+      - name: Download entities.json artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: entities-json
+          path: .
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+      
       - name: Install dependencies
         run: |
           npm install -g typescript ts-node
-      - name: Download JSON file
-        run: |
-          # If the JSON file is in another repository, download it
-          # For now, assuming it's passed as input or available in the repo
-          echo "JSON file path: ${{ inputs.json_file_path }}"
-
+      
       - name: Validate JSON file exists
         run: |
           if [ ! -f "${{ inputs.json_file_path }}" ]; then
@@ -34,6 +37,8 @@ jobs:
             exit 1
           fi
           echo "✅ JSON file found: ${{ inputs.json_file_path }}"
+          echo "📄 File contents preview:"
+          head -100 "${{ inputs.json_file_path }}"
 
       - name: Report results
         if: always()
