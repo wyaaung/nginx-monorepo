@@ -36,9 +36,15 @@ jobs:
           echo "✅ Successfully downloaded JSON file"
           echo "📄 File contents preview:"
           head -20 entities.json
-
-      - name: Call reusable sync workflow
-        uses: ./.github/workflows/gitops-sync.yml@main
+      
+      - name: Upload entities.json as artifact
+        uses: actions/upload-artifact@v4
         with:
-          json_file_path: 'entities.json'
+          name: entities-json
+          path: entities.json
 
+  call-sync-workflow:
+    needs: download-and-sync
+    uses: ./.github/workflows/gitops-sync.yml
+    with:
+      json_file_path: 'entities.json'
