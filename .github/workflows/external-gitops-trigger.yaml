@@ -1,0 +1,41 @@
+name: External GitOps Trigger
+
+on:
+  repository_dispatch:
+    types: [sync-entities-permissions]
+
+jobs:
+  download-and-sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download JSON from external repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📥 Downloading JSON file from external repository..."
+          
+          # Download the JSON file from the external repository
+          curl -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3.raw" \
+               -o entities.json \
+               -f \
+               "https://api.github.com/repos/${{ github.event.client_payload.repo_owner }}/${{ github.event.client_payload.repo_name }}/contents/${{ github.event.client_payload.file_path }}"
+
+          if [ $? -ne 0 ]; then
+            echo "❌ Failed to download JSON file"
+            exit 1
+          fi
+
+          echo "✅ Successfully downloaded JSON file"
+          echo "📄 File contents preview:"
+          head -20 entities.json
+
+      - name: Call reusable sync workflow
+        uses: ./.github/workflows/gitops-sync.yml
+        with:
+          json_file_path: 'entities.json'
+
